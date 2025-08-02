@@ -85,7 +85,7 @@ function connect() {
     const password = inputs.password.value.trim();
     myUsername = inputs.username.value.trim();
 
-    if (!host || !port || !party || !password || !myUsername) {
+    if (!host || !party || !password || !myUsername) {
         logStatus("All fields are required.");
         return;
     }
