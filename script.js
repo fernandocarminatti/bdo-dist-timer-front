@@ -204,6 +204,18 @@ function parsePartyUpdate(payload) {
     console.log(`Party Update Processed: isLeader=${isLeader}, Members:`, membersString);
 }
 
+function populateFromLocalStorage(){
+    const savedUsername = localStorage.getItem('myUsername');
+    const savedHost = localStorage.getItem('host');
+    const savedPort = localStorage.getItem('port');
+    const savedParty = localStorage.getItem('party');
+
+    if (savedUsername) inputs.username.value = savedUsername;
+    if (savedHost) inputs.host.value = savedHost;
+    if (savedPort) inputs.port.value = savedPort;
+    if (savedParty) inputs.party.value = savedParty;
+}
+
 // --- Event Listeners ---
 connectButton.addEventListener('click', () => {
     if (isConnected) {
@@ -211,6 +223,12 @@ connectButton.addEventListener('click', () => {
     } else {
         connect();
     }
+});
+connectButton.addEventListener('click', () => {
+    localStorage.setItem('myUsername', inputs.username.value.trim())
+    localStorage.setItem('host', inputs.host.value.trim());
+    localStorage.setItem('port', inputs.port.value.trim());
+    localStorage.setItem('party', inputs.party.value.trim());
 });
 
 sendEventButton.addEventListener('click', () => {
@@ -268,6 +286,7 @@ themeToggle.addEventListener('change', () => {
 
 // --- Initial Page Setup ---
 document.addEventListener('DOMContentLoaded', () => {
+    populateFromLocalStorage();
     applySavedTheme();
     updateUIState();
 });
