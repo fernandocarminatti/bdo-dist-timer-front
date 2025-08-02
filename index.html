@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olun Sync - Web Client</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Olun Sync</h1>
+        <div class="theme-container">
+            <label for="themeToggle">Theme:</label>
+            <label class="theme-switch">
+                <input type="checkbox" id="themeToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" value="WebAppUser">
+    </div>
+    <div class="form-group">
+        <label for="host">Server IP:</label>
+        <input type="text" id="host" value="127.0.0.1">
+    </div>
+    <div class="form-group">
+        <label for="port">Port:</label>
+        <input type="text" id="port" value="8888">
+    </div>
+    <div class="form-group">
+        <label for="party">Party Name:</label>
+        <input type="text" id="party" value="secretolunparty">
+    </div>
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" value="secret">
+    </div>
+
+    <button id="connectButton">Connect</button>
+    <button id="sendEventButton">Send Event (Leader Only)</button>
+
+    <div class="form-group" style="margin-top: 20px;">
+        <label for="statusLog">Status Log:</label>
+        <div id="statusLog"></div>
+    </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
