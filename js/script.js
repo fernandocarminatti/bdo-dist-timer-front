@@ -5,48 +5,21 @@ let isLeader = false;
 let myUsername = "";
 let partyMembers = [];
 
-// --- Web Audio API Setup ---
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-let alarmBuffer = null;
-
-fetch('zbuff01.wav')
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.arrayBuffer();
-    })
-    .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
-    .then(audioBuffer => {
-        alarmBuffer = audioBuffer;
-        logStatus("Audio file loaded successfully.");
-        console.log("Audio buffer loaded:", alarmBuffer);
-    })
-    .catch(error => {
-        logStatus(`Error loading audio file: ${error.message}`);
-        console.error("Error loading audio file:", error);
-    });
-
-function playSound() {
-    if (!alarmBuffer) {
-        logStatus("Audio not ready to play.");
-        console.warn("Attempted to play sound, but alarmBuffer is null.");
-        return;
-    }
-    const source = audioContext.createBufferSource();
-    source.buffer = alarmBuffer;
-    source.connect(audioContext.destination);
-    source.start(0);
-    console.log("Playing sound.");
-}
-
 // --- DOM Element References ---
+const themeToggle = document.getElementById('themeToggle');
+const htmlElement = document.documentElement;
+const statusLog = document.getElementById('statusLog');
+
+// Mode Switcher
+const partyModeRadio = document.getElementById('partyMode');
+const soloModeRadio = document.getElementById('soloMode');
+const partyControls = document.getElementById('party-controls');
+const soloControls = document.getElementById('solo-controls');
+
+// Party Controls
 const connectButton = document.getElementById('connectButton');
 const sendEventButton = document.getElementById('sendEventButton');
-const statusLog = document.getElementById('statusLog');
-const themeToggle = document.getElementById('themeToggle');
-const body = document.body;
-const inputs = {
+const partyInputs = {
     username: document.getElementById('username'),
     host: document.getElementById('host'),
     port: document.getElementById('port'),
@@ -57,12 +30,29 @@ const inputs = {
 // --- UI Update Logic ---
 function updateUIState() {
     connectButton.textContent = isConnected ? "Disconnect" : "Connect";
-    for (const key in inputs) {
-        inputs[key].disabled = isConnected;
+    for (const key in partyInputs) {
+        partyInputs[key].disabled = isConnected;
     }
     sendEventButton.disabled = !(isConnected && isLeader);
     console.log(`UI State Updated: isConnected=${isConnected}, isLeader=${isLeader}, sendButton.disabled=${sendEventButton.disabled}`); // Debugging
 }
+
+// --- Mode Switching Logic ---
+function handleModeChange() {
+    if (partyModeRadio.checked) {
+        partyControls.style.display = 'block';
+        soloControls.style.display = 'none';
+        logStatus("[INFO] Switched to Party Sync mode.");
+    } else {
+        partyControls.style.display = 'none';
+        soloControls.style.display = 'block';
+        logStatus("[INFO] Switched to Solo Timers mode.");
+    }
+}
+
+document.querySelectorAll('input[name="mode"]').forEach(radio => {
+    radio.addEventListener('change', handleModeChange);
+});
 
 function logStatus(text) {
     const line = document.createElement('div');
@@ -75,24 +65,24 @@ function logStatus(text) {
 // --- WebSocket Logic ---
 function connect() {
     if (websocket && (websocket.readyState === WebSocket.OPEN || websocket.readyState === WebSocket.CONNECTING)) {
-        logStatus("Already connected or connecting.");
+        logStatus("[INFO] Already connected or connecting.");
         return;
     }
 
-    const host = inputs.host.value.trim();
-    const port = inputs.port.value.trim();
-    const party = inputs.party.value.trim();
-    const password = inputs.password.value.trim();
-    myUsername = inputs.username.value.trim();
+    const host = partyInputs.host.value.trim();
+    const port = partyInputs.port.value.trim();
+    const party = partyInputs.party.value.trim();
+    const password = partyInputs.password.value.trim();
+    myUsername = partyInputs.username.value.trim();
 
     if (!host || !party || !password || !myUsername) {
-        logStatus("All fields are required.");
+        logStatus("[ERROR] All fields are required.");
         return;
     }
 
     const uri = `wss://${host}:${port}`;
     
-    logStatus(`Connecting to ${uri}...`);
+    logStatus(`[INFO] Connecting to ${uri}...`);
     console.log(`Attempting WebSocket connection to ${uri}`);
     
     try {
@@ -100,7 +90,7 @@ function connect() {
 
         websocket.onopen = () => {
             isConnected = true;
-            logStatus(`Connected successfully.`);
+            logStatus(`[INFO] Connected successfully.`);
             const joinMessage = `JOIN:${party}:${password}:${myUsername}`;
             websocket.send(joinMessage);
             console.log(`Sent: ${joinMessage}`);
@@ -115,13 +105,13 @@ function connect() {
             isConnected = false;
             isLeader = false;
             partyMembers = [];
-            logStatus(`Connection closed. Code: ${event.code}, Reason: ${event.reason || 'No reason'}`);
+            logStatus(`[INFO] Connection closed. Code: ${event.code}, Reason: ${event.reason || 'No reason'}`);
             console.log("WebSocket closed event:", event);
             updateUIState();
         };
 
         websocket.onerror = (error) => {
-            logStatus("WebSocket connection error. Check server address and port, or browser console for SSL errors.");
+            logStatus("[INFO] WebSocket connection error. Check server address and port, or browser console for SSL errors.");
             console.error("WebSocket error:", error);
             isConnected = false;
             isLeader = false;
@@ -129,17 +119,17 @@ function connect() {
             updateUIState();
         };
     } catch (e) {
-        logStatus(`Failed to create WebSocket: ${e.message}`);
+        logStatus(`[ERROR] Failed to create WebSocket: ${e.message}`);
         console.error("WebSocket creation error:", e);
     }
 }
 
 function disconnect() {
     if (websocket && websocket.readyState === WebSocket.OPEN) {
-        logStatus("Disconnecting...");
+        logStatus("[INFO] Disconnecting...");
         websocket.close(1000, "Client initiated disconnect");
     } else {
-        logStatus("Not connected to disconnect.");
+        logStatus("[INFO] Not connected to disconnect.");
     }
 }
 
@@ -151,38 +141,38 @@ function handleServerMessage(msg) {
 
     switch (command) {
         case "JOIN_OK":
-            logStatus("Successfully joined party!");
+            logStatus("[INFO] Successfully joined party!");
             break;
         case "PARTY_UPDATE":
             parsePartyUpdate(msg);
             break;
         case "COUNTDOWN":
-            logStatus("Leader has started the countdown!");
+            logStatus("[INFO] Leader has started the countdown!");
             break;
         case "PLAY_SOUND":
-            logStatus("Z-Buff now!");
+            logStatus("[INFO] Z-Buff now!");
             playSound();
             break;
         case "TIMER_ALREADY_ACTIVE":
-            logStatus("Timer is already active!");
+            logStatus("[INFO] Timer is already active!");
             break;
         case "NOT_LEADER":
-            logStatus("You are not the party leader!");
+            logStatus("[ERROR] You are not the party leader!");
             break;
         case "INVALID_COMMAND":
-            logStatus("Invalid command. Use JOIN:party:pass:user");
+            logStatus("[ERROR] Invalid command. Use JOIN:party:pass:user");
             break;
         case "INVALID_JOIN_FORMAT":
-            logStatus("Invalid JOIN format. Use JOIN:party:pass:user");
+            logStatus("[ERROR] Invalid JOIN format. Use JOIN:party:pass:user");
             break;
         case "INVALID_PARTY_NAMING":
-            logStatus("Invalid PARTY name.");
+            logStatus("[ERROR] Invalid PARTY name.");
             break;
         case "INCORRECT_PASSWORD":
-            logStatus("Incorrect password.");
+            logStatus("[ERROR] Incorrect password.");
             break;
         default:
-            logStatus(`Server: ${msg}`);
+            logStatus(`[INFO] Server: ${msg}`);
             console.warn(`Unhandled server command: ${command}, Payload: ${payload}`);
     }
 }
@@ -195,13 +185,13 @@ function parsePartyUpdate(payload) {
     isLeader = membersString.length > 0 && membersString[0] === myUsername;
     console.log(membersString)
     if (membersString.length === 0) {
-        logStatus("Party is now empty.");
+        logStatus(`[${activePartyName}]: Party is now empty.`);
     } else {
         const formattedMembers = membersString.map((m, i) => i === 0 ? `${m} (Leader)` : m).join(', ');
         logStatus(`[${activePartyName}](${membersString.length}): ${formattedMembers}`);
     }
     updateUIState();
-    console.log(`Party Update Processed: isLeader=${isLeader}, Members:`, membersString);
+    console.log(`[${activePartyName}]: Party Update: isLeader=${isLeader}, Members:`, membersString);
 }
 
 function populateFromLocalStorage(){
@@ -210,10 +200,10 @@ function populateFromLocalStorage(){
     const savedPort = localStorage.getItem('port');
     const savedParty = localStorage.getItem('party');
 
-    if (savedUsername) inputs.username.value = savedUsername;
-    if (savedHost) inputs.host.value = savedHost;
-    if (savedPort) inputs.port.value = savedPort;
-    if (savedParty) inputs.party.value = savedParty;
+    if (savedUsername) partyInputs.username.value = savedUsername;
+    if (savedHost) partyInputs.host.value = savedHost;
+    if (savedPort) partyInputs.port.value = savedPort;
+    if (savedParty) partyInputs.party.value = savedParty;
 }
 
 // --- Event Listeners ---
@@ -225,22 +215,22 @@ connectButton.addEventListener('click', () => {
     }
 });
 connectButton.addEventListener('click', () => {
-    localStorage.setItem('myUsername', inputs.username.value.trim())
-    localStorage.setItem('host', inputs.host.value.trim());
-    localStorage.setItem('port', inputs.port.value.trim());
-    localStorage.setItem('party', inputs.party.value.trim());
+    localStorage.setItem('myUsername', partyInputs.username.value.trim())
+    localStorage.setItem('host', partyInputs.host.value.trim());
+    localStorage.setItem('port', partyInputs.port.value.trim());
+    localStorage.setItem('party', partyInputs.party.value.trim());
 });
 
 sendEventButton.addEventListener('click', () => {
     if (isConnected && isLeader) {
         websocket.send("START");
-        logStatus(`[${inputs.party.value.trim()}] (Leader): START initiated.`);
+        logStatus(`[${partyInputs.party.value.trim()}]: START initiated.`);
         console.log("Send START via button.");
     } else if (isConnected && !isLeader) {
-        logStatus("You must be the party leader to start the timer.");
+        logStatus(`[${partyInputs.party.value()}]: You must be the party leader to start the timer.`);
         console.warn("Attempted to send START but not leader.");
     } else {
-        logStatus("Not connected to a party.");
+        logStatus(`[${partyInputs.party.value()}]: Not connected to a party.`);
         console.warn("Attempted to send START but not connected.");
     }
 });
@@ -250,40 +240,39 @@ document.addEventListener('keydown', (event) => {
         event.preventDefault();
         if (isConnected && isLeader) {
             websocket.send("START");
-            logStatus(`[${inputs.party.value.trim()}] (Leader): START initiated via hotkey.`);
-            console.log("Send START via hotkey.");
+            logStatus(`[${partyInputs.party.value.trim()}]: START initiated via hotkey.`);
+            console.log("Sent START via hotkey.");
         } else if (isConnected && !isLeader) {
-            logStatus("You must be the party leader to start the timer.");
-            console.warn("Attempted to send START via hotkey but not leader.");
+        logStatus(`[${partyInputs.party.value()}]: You must be the party leader to start the timer.`);
+        console.warn("Attempted to send START but not leader.");
         } else {
-            logStatus("Not connected to a party.");
-            console.warn("Attempted to send START via hotkey but not connected.");
+            logStatus(`[${partyInputs.party.value()}]: Not connected to a party.`);
+            console.warn("Attempted to send START but not connected.");
         }
     }
 });
 
 // --- Theme Toggling Logic ---
 function applySavedTheme() {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-        body.classList.add('dark-theme');
+    const savedTheme = localStorage.getItem('olun_theme');
+    if (savedTheme === 'light') {
+        htmlElement.setAttribute('data-theme', 'light');
         themeToggle.checked = true;
     } else {
-        body.classList.remove('dark-theme');
+        htmlElement.removeAttribute('data-theme');
         themeToggle.checked = false;
     }
 }
 
 themeToggle.addEventListener('change', () => {
     if (themeToggle.checked) {
-        body.classList.add('dark-theme');
-        localStorage.setItem('theme', 'dark');
+        htmlElement.setAttribute('data-theme', 'light');
+        localStorage.setItem('olun_theme', 'light');
     } else {
-        body.classList.remove('dark-theme');
-        localStorage.setItem('theme', 'light');
+        htmlElement.removeAttribute('data-theme');
+        localStorage.setItem('olun_theme', 'dark');
     }
 });
-
 // --- Initial Page Setup ---
 document.addEventListener('DOMContentLoaded', () => {
     populateFromLocalStorage();
