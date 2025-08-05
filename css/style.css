@@ -1,20 +1,20 @@
 /* --- Base & Theming --- */
 :root {
-    --bg-color: #18191a;
-    --text-color: #e4e6eb;
-    --container-bg: #242526;
-    --container-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    --control-group-bg: #3a3b3c;
-    --input-bg-color: #3a3b3c;
-    --input-border-color: #4a4b4c;
-    --log-bg-color: #18191a;
-    --primary-color: #2374e1;
-    --primary-hover-color: #3982e4;
-    --primary-disabled-bg: #1e4a86;
-    --secondary-color: #3d8f2d;
-    --secondary-hover-color: #4aae39;
-    --secondary-disabled-bg: #295f1f;
-    --border-color: #3a3b3c;
+    --bg-color: #0f172a;
+    --text-color: #e2e8f0;
+    --container-bg: #1e293b;
+    --container-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --control-group-bg: #334155;
+    --input-bg-color: #334155;
+    --input-border-color: #475569;
+    --log-bg-color: #0f172a;
+    --border-color: #334155;
+    --primary-color: #3b82f6;
+    --primary-hover-color: #60a5fa;
+    --primary-disabled-bg: #2563eb;
+    --secondary-color: #06b6d4;
+    --secondary-hover-color: #22d3ee;
+    --secondary-disabled-bg: #0891b2;
 }
 
 html[data-theme='light'] {
@@ -36,7 +36,7 @@ html[data-theme='light'] {
 }
 
 body {
-    font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    font-family: 'Inter', "Segoe UI", Helvetica, Arial, sans-serif;
     background-color: var(--bg-color);
     color: var(--text-color);
     margin: 0;
@@ -44,13 +44,12 @@ body {
     height: 100vh;
     overflow: hidden;
     display: flex;
-    justify-content: center;
     align-items: center;
     flex-direction: column;
     transition: background-color 0.3s, color 0.3s;
 }
 
-/* --- New Page Header for Theme Toggle --- */
+/* --- Page Header --- */
 .page-header {
     width: 100%;
     height: 60px;
@@ -67,7 +66,6 @@ body {
 }
 
 /* --- Main Layout --- */
-
 .app-wrapper {
     width: 95%;
     height: 85%;
@@ -260,9 +258,9 @@ button {
 
 /* --- Log Column --- */
 #statusLog {
+    font-family: 'JetBrains Mono', "Courier New", Courier, monospace;
     flex-grow: 1;
     min-height: 0;
-
     width: 100%;
     border: 1px solid var(--input-border-color);
     border-radius: 8px;
@@ -270,7 +268,6 @@ button {
     box-sizing: border-box;
     overflow-y: auto;
     background-color: var(--log-bg-color);
-    font-family: "Courier New", Courier, monospace;
     font-size: 14px;
     line-height: 1.5;
     color: var(--text-color);

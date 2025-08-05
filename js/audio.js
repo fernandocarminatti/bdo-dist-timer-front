@@ -25,7 +25,7 @@ Promise.all([
     secondHeartSoundBuffer = secondHeartBuffer;
     thirdHeartSoundBuffer = thirdHeartBuffer;
     longTimerSoundBuffer = longTimerBuffer;
-    logStatus("[INFO] Audio file loaded successfully.");
+    logStatus("[INFO] Audio files loaded successfully.");
 }).catch(error => {
     logStatus(`[ERROR] Error loading audio file: ${error.message}`);
     console.error("Error loading audio file:", error);
