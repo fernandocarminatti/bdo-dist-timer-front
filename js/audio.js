@@ -12,9 +12,9 @@ const soloTimerInputs = {
     firstHeart: document.getElementById('firstHeartDisplay'),
     secondHeart: document.getElementById('secondHeartDisplay'),
     thirdHeart: document.getElementById('thirdHeartDisplay'),
-    timerDisplay: document.querySelectorAll('.timer-display')
+    timerDisplay: document.getElementById('countdownDisplay')
 }
-
+console.log(soloTimerInputs)
 Promise.all([
     fetch('assets/firstHeart.wav').then(res => res.arrayBuffer()).then(buffer => audioContext.decodeAudioData(buffer)),
     fetch('assets/secondHeart.wav').then(res => res.arrayBuffer()).then(buffer => audioContext.decodeAudioData(buffer)),
@@ -67,7 +67,7 @@ function runTimerSequence(){
     const triggerEvents = {
         [triggerFirstHeart]: { name: 'First Heart', soundBuffer: firstHeartSoundBuffer },
         [triggerSecondHeart]: { name: 'Second Heart', soundBuffer: secondHeartSoundBuffer },
-        [triggerZBuff]:   { name: 'Long Timer (275s)', soundBuffer: longTimerSoundBuffer },
+        [triggerZBuff]:   { name: 'Z-Buff', soundBuffer: longTimerSoundBuffer },
         [triggerThirdHeart]: { name: 'Third Heart', soundBuffer: thirdHeartSoundBuffer },
     };
 

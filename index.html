@@ -17,76 +17,76 @@
             </label>
         </div>
     </header>
-    <div class="container">
-        <div class="container-header">
-            <h1>Olun Sync</h1>
-            <div class="mode-switcher">
-                <input type="radio" name="mode" id="soloMode" value="solo" checked>
-                <label for="soloMode">Solo Timer</label>
-                <input type="radio" name="mode" id="partyMode" value="party">
-                <label for="partyMode">Party Sync</label>
-            </div>
-        </div>
-
-        <div class="main-content">
-            <div class="controls-column">
-                <div id="solo-controls" class="control-set">
-                    <div class="form-group">
-                        <label for="zbuff-timer">Z-Buff Timer (seconds):</label>
-                        <input type="number" id="zbuff-timer" value="275">
-                    </div>
-                    <div class="form-group">
-                        <div class="timer-control">
-                            <label for="firstHeartDisplay" id="startFirstHeart">1st Heart</label>
-                            <input type="number" id="firstHeartDisplay" value="95"></input>
-                            <span class="timer-display">--:--</span>
-                        </div>
-                        <div class="timer-control">
-                            <label for="secondHeartDisplay" id="startSecondHeart">2st Heart</label>
-                            <input type="number" id="secondHeartDisplay" value="95"></input>
-                            <span class="timer-display">--:--</span>
-                        </div>
-                        <div class="timer-control">
-                            <label for="thirdHeartDisplay" id="startThirdHeart">3st Heart</label>
-                            <input type="number" id="thirdHeartDisplay" value="95"></input>
-                            <span class="timer-display">--:--</span>
-                        </div>
-                    </div>
-                    <button id="timerButton">Start Timer</button>
-                </div>
-                <div id="party-controls" class="control-set" style="display: none;">
-                    <h2>Party Connection</h2>
-                    <div class="form-group">
-                        <label for="username">Username:</label>
-                        <input type="text" id="username" value="WebAppUser">
-                    </div>
-                    <div class="form-group">
-                        <label for="host">Server IP:</label>
-                        <input type="text" id="host" value="127.0.0.1">
-                    </div>
-                    <div class="form-group">
-                        <label for="port">Port:</label>
-                        <input type="text" id="port" value="8888">
-                    </div>
-                    <div class="form-group">
-                        <label for="party">Party Name:</label>
-                        <input type="text" id="party" value="secretolunparty">
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password:</label>
-                        <input type="password" id="password" value="secret">
-                    </div>
-                    <button id="connectButton">Connect</button>
-                    <button id="sendEventButton">Send Event (Leader Only)</button>
+    <main class="app-wrapper">
+        <div class="container">
+            <div class="container-header">
+                <h1>Olun Sync</h1>
+                <div class="mode-switcher">
+                    <input type="radio" name="mode" id="soloMode" value="solo" checked>
+                    <label for="soloMode">Solo Timer</label>
+                    <input type="radio" name="mode" id="partyMode" value="party">
+                    <label for="partyMode">Party Sync</label>
                 </div>
             </div>
 
-            <div class="log-column">
-                <div id="statusLog"></div>
+            <div class="main-content">
+                <div class="controls-column">
+                    <div id="solo-controls" class="control-set">
+                        <div class="form-group">
+                            <label for="zbuff-timer">Z-Buff Timer (seconds):</label>
+                            <input type="number" id="zbuff-timer" value="275">
+                        </div>
+                        <div class="form-group">
+                            <div class="timer-control">
+                                <label for="firstHeartDisplay" id="startFirstHeart">1st Heart</label>
+                                <input type="number" id="firstHeartDisplay" value="95"></input>
+                            </div>
+                            <div class="timer-control">
+                                <label for="secondHeartDisplay" id="startSecondHeart">2st Heart</label>
+                                <input type="number" id="secondHeartDisplay" value="95"></input>
+                            </div>
+                            <div class="timer-control">
+                                <label for="thirdHeartDisplay" id="startThirdHeart">3st Heart</label>
+                                <input type="number" id="thirdHeartDisplay" value="95"></input>
+                            </div>
+                        </div>
+                        <div class="timer-display-container">
+                            <span class="timer-display" id="countdownDisplay">--:--</span>
+                        </div>
+                        <button id="timerButton">Start Timer</button>
+                    </div>
+                    <div id="party-controls" class="control-set" style="display: none;">
+                        <div class="form-group">
+                            <label for="username">Username:</label>
+                            <input type="text" id="username" value="WebAppUser">
+                        </div>
+                        <div class="form-group">
+                            <label for="host">Server IP:</label>
+                            <input type="text" id="host" value="127.0.0.1">
+                        </div>
+                        <div class="form-group">
+                            <label for="port">Port:</label>
+                            <input type="text" id="port" value="8888">
+                        </div>
+                        <div class="form-group">
+                            <label for="party">Party Name:</label>
+                            <input type="text" id="party" value="secretolunparty">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="password" id="password" value="secret">
+                        </div>
+                        <button id="connectButton">Connect</button>
+                        <button id="sendEventButton">Send Event (Leader Only)</button>
+                    </div>
+                </div>
+
+                <div class="log-column">
+                    <div id="statusLog"></div>
+                </div>
             </div>
         </div>
-    </div>
-
+    </main>
 </body>
 <script src="js/script.js" defer></script>
 <script src="js/audio.js" defer></script>
