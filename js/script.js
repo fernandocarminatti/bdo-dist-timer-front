@@ -59,7 +59,7 @@ function logStatus(text) {
     line.textContent = text;
     statusLog.appendChild(line);
     statusLog.scrollTop = statusLog.scrollHeight;
-    console.log(`STATUS: ${text}`);
+    console.log(`${text}`);
 }
 
 // --- WebSocket Logic ---

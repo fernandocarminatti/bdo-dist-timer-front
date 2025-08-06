@@ -46,6 +46,7 @@ function playSound(bufferToPlay) {
 }
 
 function runTimerSequence(){
+    soloTimerInputs.timerDisplay.textContent = '00:00';
     if (sequenceIntervalId) {
         clearInterval(sequenceIntervalId);
         sequenceIntervalId = null;
@@ -81,8 +82,9 @@ function runTimerSequence(){
 
     sequenceIntervalId = setInterval(() => {
         elapsedSeconds++;
+        const minutes = Math.floor(elapsedSeconds / 60).toString().padStart(2, '0');
         const seconds = (elapsedSeconds % 60).toString().padStart(2, '0');
-        soloTimerInputs.timerDisplay.textContent = `00:${seconds}`;
+        soloTimerInputs.timerDisplay.textContent = `${minutes}:${seconds}`;
         if (triggerEvents[elapsedSeconds]) {
             const event = triggerEvents[elapsedSeconds];
             logStatus(`[EVENT] ${event.name} triggered! ${elapsedSeconds}s`);
