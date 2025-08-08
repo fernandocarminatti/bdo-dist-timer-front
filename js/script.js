@@ -19,6 +19,7 @@ const soloControls = document.getElementById('solo-controls');
 // Party Controls
 const connectButton = document.getElementById('connectButton');
 const sendEventButton = document.getElementById('sendEventButton');
+const cancelEventButton = document.getElementById('cancelEventButton');
 const partyInputs = {
     username: document.getElementById('username'),
     host: document.getElementById('host'),
@@ -34,7 +35,7 @@ function updateUIState() {
         partyInputs[key].disabled = isConnected;
     }
     sendEventButton.disabled = !(isConnected && isLeader);
-    console.log(`UI State Updated: isConnected=${isConnected}, isLeader=${isLeader}, sendButton.disabled=${sendEventButton.disabled}`); // Debugging
+    cancelEventButton.disabled = !(isConnected && isLeader);
 }
 
 // --- Mode Switching Logic ---
@@ -59,7 +60,6 @@ function logStatus(text) {
     line.textContent = text;
     statusLog.appendChild(line);
     statusLog.scrollTop = statusLog.scrollHeight;
-    console.log(`${text}`);
 }
 
 // --- WebSocket Logic ---
@@ -83,7 +83,6 @@ function connect() {
     const uri = `wss://${host}:${port}`;
     
     logStatus(`[INFO] Connecting to ${uri}...`);
-    console.log(`Attempting WebSocket connection to ${uri}`);
     
     try {
         websocket = new WebSocket(uri);
@@ -93,7 +92,6 @@ function connect() {
             logStatus(`[INFO] Connected successfully.`);
             const joinMessage = `JOIN:${party}:${password}:${myUsername}`;
             websocket.send(joinMessage);
-            console.log(`Sent: ${joinMessage}`);
             updateUIState();
         };
 
@@ -106,7 +104,6 @@ function connect() {
             isLeader = false;
             partyMembers = [];
             logStatus(`[INFO] Connection closed. Code: ${event.code}, Reason: ${event.reason || 'No reason'}`);
-            console.log("WebSocket closed event:", event);
             updateUIState();
         };
 
@@ -134,7 +131,6 @@ function disconnect() {
 }
 
 function handleServerMessage(msg) {
-    console.log(`Received message: ${msg}`);
     const parts = msg.split(":", 2);
     const command = parts[0];
     const payload = parts.length > 1 ? parts[1] : "";
@@ -147,11 +143,32 @@ function handleServerMessage(msg) {
             parsePartyUpdate(msg);
             break;
         case "COUNTDOWN":
-            logStatus("[INFO] Leader has started the countdown!");
+            logStatus(`[INFO] Countdown cycle ${payload} is running!`);
+            break;
+        case "STOP_TIMER_TASK":
+            logStatus("[INFO] Timer task stopped!");
+            break;
+        case "COUNTDOWN_CANCELLED":
+            logStatus("[INFO] Countdown cancelled!");
+            break;
+        case "FIRST_HEART":
+            logStatus("[INFO] First heart!");
+            playSound(firstHeartSoundBuffer);
+            break;
+        case "SECOND_HEART":
+            logStatus("[INFO] Second heart!");
+            playSound(secondHeartSoundBuffer);
+            break;
+        case "THIRD_HEART":
+            logStatus("[INFO] Third heart!");
+            playSound(thirdHeartSoundBuffer);
             break;
         case "PLAY_SOUND":
             logStatus("[INFO] Z-Buff now!");
-            playSound();
+            playSound(longTimerSoundBuffer);
+            break;
+        case "COUNTDOWN_CYCLE_COMPLETE":
+            logStatus(`[INFO] Cycle ${payload} completed!`);
             break;
         case "TIMER_ALREADY_ACTIVE":
             logStatus("[INFO] Timer is already active!");
@@ -183,7 +200,6 @@ function parsePartyUpdate(payload) {
     const membersString = payloadParts.slice(2);
 
     isLeader = membersString.length > 0 && membersString[0] === myUsername;
-    console.log(membersString)
     if (membersString.length === 0) {
         logStatus(`[${activePartyName}]: Party is now empty.`);
     } else {
@@ -191,7 +207,6 @@ function parsePartyUpdate(payload) {
         logStatus(`[${activePartyName}](${membersString.length}): ${formattedMembers}`);
     }
     updateUIState();
-    console.log(`[${activePartyName}]: Party Update: isLeader=${isLeader}, Members:`, membersString);
 }
 
 function populateFromLocalStorage(){
@@ -224,8 +239,20 @@ connectButton.addEventListener('click', () => {
 sendEventButton.addEventListener('click', () => {
     if (isConnected && isLeader) {
         websocket.send("START");
-        logStatus(`[${partyInputs.party.value.trim()}]: START initiated.`);
-        console.log("Send START via button.");
+        logStatus(`[${partyInputs.party.value.trim()}]: START sent.`);
+    } else if (isConnected && !isLeader) {
+        logStatus(`[${partyInputs.party.value()}]: You must be the party leader to start the timer.`);
+        console.warn("Attempted to send START but not leader.");
+    } else {
+        logStatus(`[${partyInputs.party.value()}]: Not connected to a party.`);
+        console.warn("Attempted to send START but not connected.");
+    }
+});
+
+cancelEventButton.addEventListener('click', () => {
+    if (isConnected && isLeader) {
+        websocket.send("STOP_TIMER_TASK");
+        logStatus(`[${partyInputs.party.value.trim()}]: STOP_TIMER_TASK sent.`);
     } else if (isConnected && !isLeader) {
         logStatus(`[${partyInputs.party.value()}]: You must be the party leader to start the timer.`);
         console.warn("Attempted to send START but not leader.");
@@ -241,7 +268,6 @@ document.addEventListener('keydown', (event) => {
         if (isConnected && isLeader) {
             websocket.send("START");
             logStatus(`[${partyInputs.party.value.trim()}]: START initiated via hotkey.`);
-            console.log("Sent START via hotkey.");
         } else if (isConnected && !isLeader) {
         logStatus(`[${partyInputs.party.value()}]: You must be the party leader to start the timer.`);
         console.warn("Attempted to send START but not leader.");

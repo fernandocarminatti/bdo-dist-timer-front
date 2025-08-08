@@ -25,16 +25,16 @@
             <div class="container-header">
                 <h1>Olun Sync</h1>
                 <div class="mode-switcher">
-                    <input type="radio" name="mode" id="soloMode" value="solo" checked>
+                    <input type="radio" name="mode" id="soloMode" value="solo">
                     <label for="soloMode">Solo Timer</label>
-                    <input type="radio" name="mode" id="partyMode" value="party">
+                    <input type="radio" name="mode" id="partyMode" value="party" checked>
                     <label for="partyMode">Party Sync</label>
                 </div>
             </div>
 
             <div class="main-content">
                 <div class="controls-column">
-                    <div id="solo-controls" class="control-set">
+                    <div id="solo-controls" class="control-set" style="display: none;">
                         <div class="form-group">
                             <label for="zbuff-timer">Z-Buff Timer (seconds):</label>
                             <input type="number" id="zbuff-timer" value="275">
@@ -58,7 +58,7 @@
                         </div>
                         <button id="timerButton">Start Timer</button>
                     </div>
-                    <div id="party-controls" class="control-set" style="display: none;">
+                    <div id="party-controls" class="control-set">
                         <div class="form-group">
                             <label for="username">Username:</label>
                             <input type="text" id="username" value="WebAppUser">
@@ -80,7 +80,10 @@
                             <input type="password" id="password" value="secret">
                         </div>
                         <button id="connectButton">Connect</button>
-                        <button id="sendEventButton">Send Event (Leader Only)</button>
+                        <div class="sendEventContainer">
+                            <button id="sendEventButton">Send Event</button>
+                            <button id="cancelEventButton">Cancel Event</button>
+                        </div>
                     </div>
                 </div>
 

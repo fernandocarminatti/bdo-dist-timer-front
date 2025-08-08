@@ -14,7 +14,6 @@ const soloTimerInputs = {
     thirdHeart: document.getElementById('thirdHeartDisplay'),
     timerDisplay: document.getElementById('countdownDisplay')
 }
-console.log(soloTimerInputs)
 Promise.all([
     fetch('assets/firstHeart.wav').then(res => res.arrayBuffer()).then(buffer => audioContext.decodeAudioData(buffer)),
     fetch('assets/secondHeart.wav').then(res => res.arrayBuffer()).then(buffer => audioContext.decodeAudioData(buffer)),
